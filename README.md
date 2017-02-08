@@ -18,42 +18,77 @@ Usage:
 3. `initialize-essay`
 
 
+```js
+// showMeHowToUseIt.js
+// (This file is used in the self-test)
+export default function showMeHowToUseIt (run) {
+  // Create your project directory
+  run('mkdir /tmp/test-initialize-essay')
+
+  // cd into it
+  process.chdir('/tmp/test-initialize-essay')
+
+  // Initialize an npm project
+  run('yarn init -y')
+
+  // Initialize an essay
+  run('initialize-essay')
+
+  // Test the essay
+  run('yarn test')
+
+  // Build the essay
+  run('yarn run prepublish')
+  assert(
+    require('fs')
+      .existsSync('/tmp/test-initialize-essay/lib/index.js')
+  )
+
+  // How about initialize it again?
+  run('initialize-essay')
+}
+```
+
 ## Initialization steps
 
 ```js
 // index.js
-import readPkg from 'read-pkg'
-import writePkg from 'write-pkg'
 import fs from 'fs'
 import chalk from 'chalk'
-
 import log from './log'
 import addScripts from './addScripts'
 import addFiles from './addFiles'
+import modifyPackageJson from './modifyPackageJson'
 
 export function initialize () {
   log('Initializing an essay project...')
+
+  // README.md
   if (!fs.existsSync('README.md')) {
     log('Writing an example README.md file')
     fs.writeFileSync('README.md', fs.readFileSync(require.resolve('../example.md')))
   }
+
+  // .gitignore
   if (!fs.existsSync('.gitignore')) {
     log('Writing a .gitignore file')
     fs.writeFileSync('.gitignore', fs.readFileSync(require.resolve('../.gitignore')))
   }
-  const originalPkg = readPkg.sync({ normalize: false })
-  const pkg = JSON.parse(JSON.stringify(originalPkg))
-  addScripts(pkg)
-  addFiles(pkg)
-  if (JSON.stringify(pkg) !== JSON.stringify(originalPkg)) {
-    log('Writing package.json file...')
-    writePkg.sync(pkg)
-  }
+
+  // Update package.json
+  const pkg = modifyPackageJson(pkg => {
+    addScripts(pkg)
+    addFiles(pkg)
+  })
+
+  // Install essay
   if (!pkg.devDependencies || !pkg.devDependencies.essay) {
     const command = 'yarn add --dev essay'
     log('Installing essay using "%s"...', command)
     require('child_process').execSync(command, { stdio: 'inherit' })
   }
+
+  // Show success message
   console.log('')
   console.log('   Your essay has been initialized.')
   console.log('')
@@ -116,6 +151,28 @@ export default function addFiles (pkg) {
 
 ## Utils
 
+### modifying `package.json`
+
+```js
+// modifyPackageJson.js
+import readPkg from 'read-pkg'
+import writePkg from 'write-pkg'
+import log from './log'
+
+export default function modifyPackageJson (f) {
+  const originalPkg = readPkg.sync({ normalize: false })
+  const pkg = JSON.parse(JSON.stringify(originalPkg))
+  f(pkg)
+  if (JSON.stringify(pkg) !== JSON.stringify(originalPkg)) {
+    log('Writing package.json file...')
+    writePkg.sync(pkg)
+  } else {
+    log('package.json unchanged')
+  }
+  return pkg
+}
+```
+
 ### logging
 
 ```js
@@ -133,10 +190,15 @@ import fs from 'fs'
 import { execSync } from 'child_process'
 import chalk from 'chalk'
 import { initialize } from './'
+import showMeHowToUseIt from './showMeHowToUseIt'
 
 const run = (command) => {
   console.log('=========>', chalk.bold(command))
-  execSync(command, { stdio: 'inherit' })
+  if (command === 'initialize-essay') {
+    initialize()
+  } else {
+    execSync(command, { stdio: 'inherit' })
+  }
 }
 
 it('Works', function () {
@@ -145,30 +207,14 @@ it('Works', function () {
   // Build itself
   run('yarn run prepublish')
 
-  // Create a test directory
+  // Cleanup
   run('rm -rf /tmp/test-initialize-essay')
-  run('mkdir /tmp/test-initialize-essay')
 
-  // Initialize an npm project
-  run('cd /tmp/test-initialize-essay && yarn init -y')
-
-  // Initialize an essay
+  // Show me!
   const cwd = process.cwd()
   try {
-    process.chdir('/tmp/test-initialize-essay')
-    initialize()
-
-    // Test the essay
-    run('yarn test')
-
-    // Build the essay
-    run('yarn run prepublish')
-    assert(fs.existsSync('/tmp/test-initialize-essay/lib/index.js'))
-
-    // How about initialize it again?
-    initialize()
+    showMeHowToUseIt(run)
   } finally {
-    // Come back!!
     process.chdir(cwd)
   }
 })
