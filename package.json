@@ -1,6 +1,6 @@
 {
   "name": "initialize-essay",
-  "version": "1.0.0-2",
+  "version": "1.0.0-3",
   "description": "Initializes an essay",
   "main": "lib/index.js",
   "repository": "git@github.com:dtinth/initialize-essay.git",
