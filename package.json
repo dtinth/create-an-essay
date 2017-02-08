@@ -17,7 +17,7 @@
     "initialize-essay": "./cli.js"
   },
   "scripts": {
-    "prepublish": "essay build && chmod +x cli.js",
+    "prepublish": "essay build",
     "test": "essay test",
     "lint": "essay lint"
   },

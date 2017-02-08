@@ -33,6 +33,14 @@ import addFiles from './addFiles'
 
 export function initialize () {
   log('Initializing an essay project...')
+  if (!fs.existsSync('README.md')) {
+    log('Writing an example README.md file')
+    fs.writeFileSync('README.md', fs.readFileSync(require.resolve('../example.md')))
+  }
+  if (!fs.existsSync('.gitignore')) {
+    log('Writing a .gitignore file')
+    fs.writeFileSync('.gitignore', fs.readFileSync(require.resolve('../.gitignore')))
+  }
   const originalPkg = readPkg.sync({ normalize: false })
   const pkg = JSON.parse(JSON.stringify(originalPkg))
   addScripts(pkg)
@@ -45,14 +53,6 @@ export function initialize () {
     const command = 'yarn add --dev essay'
     log('Installing essay using "%s"...', command)
     require('child_process').execSync(command, { stdio: 'inherit' })
-  }
-  if (!fs.existsSync('README.md')) {
-    log('Writing an example README.md file')
-    fs.writeFileSync('README.md', fs.readFileSync(require.resolve('../example.md')))
-  }
-  if (!fs.existsSync('.gitignore')) {
-    log('Writing a .gitignore file')
-    fs.writeFileSync('.gitignore', fs.readFileSync(require.resolve('../.gitignore')))
   }
   console.log('')
   console.log('   Your essay has been initialized.')
@@ -123,4 +123,42 @@ export default function addFiles (pkg) {
 export default function log (...stuff) {
   console.log(' *', require('util').format(...stuff))
 }
+```
+
+## Self-test
+
+```js
+// self.test.js
+import fs from 'fs'
+import { execSync } from 'child_process'
+import chalk from 'chalk'
+
+const run = (command) => {
+  console.log('=========>', chalk.bold(command))
+  execSync(command, { stdio: 'inherit' })
+}
+
+it('Works', function () {
+  this.timeout(0)
+
+  // Build itself
+  run('yarn run prepublish')
+
+  // Create a test directory
+  run('rm -rf /tmp/test-initialize-essay')
+  run('mkdir /tmp/test-initialize-essay')
+
+  // Initialize an npm project
+  run('cd /tmp/test-initialize-essay && yarn init -y')
+
+  // Initialize an essay
+  run('cd /tmp/test-initialize-essay && ' + require.resolve('../cli'))
+
+  // Test the essay
+  run('cd /tmp/test-initialize-essay && yarn test')
+
+  // Build the essay
+  run('cd /tmp/test-initialize-essay && yarn run prepublish')
+  assert(fs.existsSync('/tmp/test-initialize-essay/lib/index.js'))
+})
 ```
