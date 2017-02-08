@@ -154,15 +154,22 @@ it('Works', function () {
 
   // Initialize an essay
   const cwd = process.cwd()
-  process.chdir('/tmp/test-initialize-essay')
-  initialize()
-  process.chdir(cwd)
+  try {
+    process.chdir('/tmp/test-initialize-essay')
+    initialize()
 
-  // Test the essay
-  run('cd /tmp/test-initialize-essay && yarn test')
+    // Test the essay
+    run('yarn test')
 
-  // Build the essay
-  run('cd /tmp/test-initialize-essay && yarn run prepublish')
-  assert(fs.existsSync('/tmp/test-initialize-essay/lib/index.js'))
+    // Build the essay
+    run('yarn run prepublish')
+    assert(fs.existsSync('/tmp/test-initialize-essay/lib/index.js'))
+
+    // How about initialize it again?
+    initialize()
+  } finally {
+    // Come back!!
+    process.chdir(cwd)
+  }
 })
 ```
