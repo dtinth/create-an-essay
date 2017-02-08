@@ -132,6 +132,7 @@ export default function log (...stuff) {
 import fs from 'fs'
 import { execSync } from 'child_process'
 import chalk from 'chalk'
+import { initialize } from './'
 
 const run = (command) => {
   console.log('=========>', chalk.bold(command))
@@ -152,7 +153,10 @@ it('Works', function () {
   run('cd /tmp/test-initialize-essay && yarn init -y')
 
   // Initialize an essay
-  run('cd /tmp/test-initialize-essay && ' + require.resolve('../cli'))
+  const cwd = process.cwd()
+  process.chdir('/tmp/test-initialize-essay')
+  initialize()
+  process.chdir(cwd)
 
   // Test the essay
   run('cd /tmp/test-initialize-essay && yarn test')
