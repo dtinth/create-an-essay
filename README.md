@@ -25,6 +25,7 @@ Usage:
 import readPkg from 'read-pkg'
 import writePkg from 'write-pkg'
 import fs from 'fs'
+import chalk from 'chalk'
 
 import log from './log'
 import addScripts from './addScripts'
@@ -53,6 +54,15 @@ export function initialize () {
     log('Writing a .gitignore file')
     fs.writeFileSync('.gitignore', fs.readFileSync(require.resolve('../.gitignore')))
   }
+  console.log('')
+  console.log('   Your essay has been initialized.')
+  console.log('')
+  console.log('   To run tests: ', chalk.cyan('yarn test'))
+  console.log('   To lint code: ', chalk.cyan('yarn run lint'))
+  console.log('   To build:     ', chalk.cyan('yarn run prepublish'))
+  console.log('')
+  console.log('   Enjoy!! :)')
+  console.log('')
 }
 ```
 
@@ -111,6 +121,6 @@ export default function addFiles (pkg) {
 ```js
 // log.js
 export default function log (...stuff) {
-  console.log('*', require('util').format(...stuff))
+  console.log(' *', require('util').format(...stuff))
 }
 ```

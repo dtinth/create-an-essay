@@ -25,6 +25,7 @@
     "essay": "^3.0.1"
   },
   "dependencies": {
+    "chalk": "^1.1.3",
     "read-pkg": "^2.0.0",
     "write-pkg": "^2.0.0"
   }
