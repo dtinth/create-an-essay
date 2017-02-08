@@ -1,0 +1,31 @@
+{
+  "name": "initialize-essay",
+  "version": "1.0.0",
+  "description": "Initializes an essay",
+  "main": "lib/index.js",
+  "repository": "git@github.com:dtinth/initialize-essay.git",
+  "author": "Thai Pangsakulyanont <dtinth@spacet.me>",
+  "license": "MIT",
+  "files": [
+    "lib",
+    "src",
+    "cli.js",
+    "example.md",
+    ".gitignore"
+  ],
+  "bin": {
+    "initialize-essay": "./cli.js"
+  },
+  "scripts": {
+    "prepublish": "essay build && chmod +x cli.js",
+    "test": "essay test",
+    "lint": "essay lint"
+  },
+  "devDependencies": {
+    "essay": "^3.0.1"
+  },
+  "dependencies": {
+    "read-pkg": "^2.0.0",
+    "write-pkg": "^2.0.0"
+  }
+}
