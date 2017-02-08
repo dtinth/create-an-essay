@@ -1,5 +1,5 @@
 
-# initialize-essay
+# initialize-essay [![CircleCI](https://circleci.com/gh/dtinth/initialize-essay/tree/master.svg?style=svg)](https://circleci.com/gh/dtinth/initialize-essay/tree/master) [![codecov](https://codecov.io/gh/dtinth/initialize-essay/branch/master/graph/badge.svg)](https://codecov.io/gh/dtinth/initialize-essay)
 
 The easiest way to initialize a new essay.
 
